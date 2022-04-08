@@ -3,13 +3,7 @@ using NotesAppDotnet.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-
-// builder.Host.ConfigureAppConfiguration((context, configurationBuilder) =>
-// {
-//     var configurationRoot = configurationBuilder.Build();
-//     configurationRoot.Bind();
-// }).Build();
+builder.Host.UseSystemd();
 
 // Add services to the container.
 
