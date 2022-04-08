@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NotesAppDotnet.Data;
 
@@ -10,9 +11,10 @@ using NotesAppDotnet.Data;
 namespace NotesAppDotnet.Migrations
 {
     [DbContext(typeof(NotesContext))]
-    partial class NotesContextModelSnapshot : ModelSnapshot
+    [Migration("20220408205831_Adding_tag")]
+    partial class Adding_tag
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.3");

@@ -28,4 +28,18 @@ public class NotesController : ControllerBase
 
         return notes;
     }
+
+    [HttpPost]
+    public async Task Post(Note newNote)
+    {
+        newNote = newNote with { Id = null };
+        
+        if (!_settings.Value.Tags.Contains(newNote.Tag))
+        {
+            throw new BadHttpRequestException($"Tag {newNote.Tag} is not on list of allowed tags");
+        }
+        
+        await _dbContext.Notes.AddAsync(newNote);
+        await _dbContext.SaveChangesAsync();
+    }
 }
