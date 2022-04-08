@@ -1,3 +1,4 @@
+using NotesAppDotnet.Data;
 using NotesAppDotnet.Model;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,8 @@ builder.Services.AddOptions<Settings>()
     .Bind(builder.Configuration.GetSection(Settings.ConfigurationSectionName));
 
 builder.Services.AddControllers();
+builder.Services.AddDbContext<NotesContext>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

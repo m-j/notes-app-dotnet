@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using NotesAppDotnet.Data;
 using NotesAppDotnet.Model;
 
 namespace NotesAppDotnet.Controllers;
@@ -9,21 +11,21 @@ namespace NotesAppDotnet.Controllers;
 public class NotesController : ControllerBase
 {
     private readonly IOptions<Settings> _settings;
+    private readonly NotesContext _dbContext;
 
-    public NotesController(IOptions<Settings> settings)
+    public NotesController(IOptions<Settings> settings, NotesContext dbContext)
     {
         _settings = settings;
+        _dbContext = dbContext;
     }
 
     [HttpGet]
-    public IEnumerable<Note> Get()
+    public async Task<IEnumerable<Note>> Get()
     {
         Console.WriteLine(_settings.Value.DataPath);
-        
-        return new[]
-        {
-            new Note(1, "Test 1", DateTime.Now),
-            new Note(2, "Test 2", DateTime.Now)
-        };
+
+        var notes = await _dbContext.Notes.ToListAsync();
+
+        return notes;
     }
 }
