@@ -1,5 +1,6 @@
 using NotesAppDotnet.Data;
 using NotesAppDotnet.Model;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+using (var scope = app.Services.CreateScope())
+{
+    var dataContext = scope.ServiceProvider.GetRequiredService<NotesContext>();
+    dataContext.Database.Migrate();
+}
 // app.UseHttpsRedirection();
 
 // app.UseAuthorization();
