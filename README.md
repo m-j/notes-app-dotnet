@@ -11,19 +11,20 @@ this app as a service.
 Clone this repository (https://github.com/m-j/notes-app-dotnet)
 
 ### 2. Installing & building
-Install all required required dependencies (.NET 6)
+Install all required required dependencies to build and host application (.NET 6):
+https://docs.microsoft.com/en-us/dotnet/core/install/linux?WT.mc_id=dotnet-35129-website
 
-After .NET 6 is installed build an app:
+After .NET 6 is installed publish an app to a directory that makes sense from FHS
+(Filesystem Hierarchy Standard) perspective:
 
 ```shell
-dotnet build .\NotesAppDotnet.sln -c Release
+dotnet publish ./NotesAppDotnet.sln --configuration Release --output <destination_dir>
 ```
-Then copy generated binaries to folder that makes sense from FHS perspective
 
 ### 3. Create folder structure and configuration
 
-App requires one folder that will contain SQL Lite database file. You'll have to create 
-it and provided its path in configuration file. 
+App requires one folder that will contain SQL Lite database file. You'll have to create
+it and provided its path in configuration file.
 
 Configuration file has following format:
 
@@ -57,19 +58,23 @@ Generate this config using jinja2 template engine and populate "Tags" section wi
 list of items downloaded from this gist: https://gist.github.com/m-j/58cda3e3be469191518c7d704ff336ba
 
 (You can click on Raw button in order to get plain txt)
+
 ### 4. Make app run as a service
 
-
+Service supports systemd notification protocol (Type=notify)
 
 # Useful info
 
-# Running dll
-You can start .NET app in similar to starting javas JAR:
+## Running dll
+You can start .NET app in similar manner to starting javas JAR:
 
 `dotnet NotesAppDotnet.dll`
 
+## Testing the app
+Application exposes Swagger UI which can be accessed using <application_url>/swagger/index.html page
+
 ## Choosing config file to use
-App can have multiple appsettings files in directory. 
+App can have multiple appsettings files in application working directory.
 To use specific one you can set environment variable:
 
 ```shell
