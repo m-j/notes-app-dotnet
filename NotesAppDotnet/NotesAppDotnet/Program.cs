@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using NotesAppDotnet.Data;
 using NotesAppDotnet.Model;
+using OpenTelemetry.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,11 +18,24 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Host.UseSystemd();
 
+// https://opentelemetry.io/docs/instrumentation/net/automatic/
+builder.Services.AddOpenTelemetryMetrics(otel =>
+{
+    // Add instrumentation - metrics providers
+    // CPU / Memory  + GC activity aka Runtime Metrics
+    otel.AddRuntimeMetrics();
+    // HTTP Server call durations per return code
+    otel.AddAspNetCoreInstrumentation();
+
+    // Register Prometheus as OTEL exporter
+    otel.AddPrometheusExporter();
+});
+
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment())
 // {
