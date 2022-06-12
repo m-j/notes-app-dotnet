@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using NotesAppDotnet.Data;
 using NotesAppDotnet.Model;
+using OpenTelemetry;
 using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,11 +34,27 @@ builder.Services.AddOpenTelemetryMetrics(otel =>
     otel.AddPrometheusExporter();
 });
 
+// Configure OpenTelemetry tracer with automatic instrumentation and Jeager exporter
+// Configure Jeager endpoit via ENV variables
+// https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Jaeger/README.md
+builder.Services.AddOpenTelemetryTracing(tracerProviderBuilder =>
+{
+    tracerProviderBuilder
+    .AddSource("NotesApp")
+    .SetResourceBuilder(
+        ResourceBuilder.CreateDefault()
+            .AddService(serviceName: "NotesApp"))
+    .AddAspNetCoreInstrumentation()
+    .AddEntityFrameworkCoreInstrumentation()
+    .AddJaegerExporter();
+});
+
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
+
 // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment())
 // {
