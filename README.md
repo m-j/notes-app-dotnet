@@ -1,10 +1,10 @@
 # notes-app-dotnet
 
-This is simple .NET 6 app that allows user to create notes belonging to certain categories. 
+This is simple .NET 6 app that allows user to create notes belonging to certain categories.
 
 ## Your task
 
-Your task is to prepare ansible playbook that will clone this git repository and install 
+Your task is to prepare ansible playbook that will clone this git repository and install
 this app as a service.
 
 ### 1. Cloning repository
@@ -23,8 +23,8 @@ dotnet publish ./NotesAppDotnet.sln --configuration Release --output <destinatio
 
 ### 3. Create folder structure and configuration
 
-App requires one folder that will contain SQL Lite database file. You'll have to create
-it and provided its path in configuration file.
+App requires one folder that will contain SQL Lite database file. You'll have to create destination directory
+and provide path in configuration file (<destination_dir>/appsettings.json).
 
 Configuration file has following format:
 
@@ -53,34 +53,23 @@ Configuration file has following format:
 
 ```
 
-In Settings section there is subsection: "Tags". 
-Generate this config using jinja2 template engine and populate "Tags" section with
-list of items downloaded from this gist: https://gist.github.com/m-j/58cda3e3be469191518c7d704ff336ba
-
-(You can click on Raw button in order to get plain txt)
-
 ### 4. Make app run as a service
 
-Service supports systemd notification protocol (Type=notify)
+Dotnet application can be started in similiar way to Java Jars, in applciation directory execute:
+`dotnet NotesAppDotnet.dll`
+
+Service supports systemd notification protocol (Type=notify).
+
+### 5. Verification
+
+Add task to verify if application is running properly.
+
+### 6. Use exteral service to fetch configuration data
+In Settings section there is subsection: "Tags", populate this list using data returned from gist service: https://gist.githubusercontent.com/m-j/58cda3e3be469191518c7d704ff336ba/raw/ba7ce0264109639ae8808e39f367d938cbfabad4/notes_app_dotnet_tags.txt
 
 # Useful info
 
-## Running dll
-You can start .NET app in similar manner to starting javas JAR:
-
-`dotnet NotesAppDotnet.dll`
-
 ## Testing the app
-Application exposes Swagger UI which can be accessed using <application_url>/swagger/index.html page
+Application exposes Swagger UI which can be accessed using <application_url>/swagger/index.html page from the browser.
 
-## Choosing config file to use
-App can have multiple appsettings files in application working directory.
-To use specific one you can set environment variable:
-
-```shell
-ASPNETCORE_ENVIRONMENT=Release
-```
-
-Ths will make app use: `appsettings.Release.json`
-
-
+Basic healthcheck is implemented as /health endpoint.
