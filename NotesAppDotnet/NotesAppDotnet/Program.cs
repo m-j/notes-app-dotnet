@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using NotesAppDotnet.Data;
 using NotesAppDotnet.Model;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,10 +25,39 @@ builder.Services.AddHealthChecks()
 
 builder.Host.UseSystemd();
 
+// https://opentelemetry.io/docs/instrumentation/net/automatic/
+builder.Services.AddOpenTelemetryMetrics(otel =>
+{
+    // Add instrumentation - metrics providers
+    // CPU / Memory  + GC activity aka Runtime Metrics
+    otel.AddRuntimeMetrics();
+    // HTTP Server call durations per return code
+    otel.AddAspNetCoreInstrumentation();
+
+    // Register Prometheus as OTEL exporter
+    otel.AddPrometheusExporter();
+});
+
+// Configure OpenTelemetry tracer with automatic instrumentation and Jeager exporter
+// Configure Jeager endpoit via ENV variables
+// https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Jaeger/README.md
+builder.Services.AddOpenTelemetryTracing(tracerProviderBuilder =>
+{
+    tracerProviderBuilder
+    .AddSource("NotesApp")
+    .SetResourceBuilder(
+        ResourceBuilder.CreateDefault()
+            .AddService(serviceName: "NotesApp"))
+    .AddAspNetCoreInstrumentation()
+    .AddEntityFrameworkCoreInstrumentation()
+    .AddJaegerExporter();
+});
+
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.MapHealthChecks("/health");
 
